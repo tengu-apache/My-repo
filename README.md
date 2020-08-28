@@ -11,7 +11,7 @@
 
 * https://pyneng.github.io/docs/course-vm/
 
-
+##testoooooosdsodsodsdosd
 ## Задания
 
 В каталоге exercises находятся задания к курсу, отсортированные по разделам курса.
