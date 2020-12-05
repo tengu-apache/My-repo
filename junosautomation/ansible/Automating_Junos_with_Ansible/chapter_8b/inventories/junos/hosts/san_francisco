@@ -1,0 +1,17 @@
+[sf:children]
+sf_ex
+sf_srx
+
+[ex:children]
+sf_ex
+
+[srx:children]
+sf_srx
+
+[sf_ex]
+eowyn
+faramir
+
+[sf_srx]
+aragorn
+arwen

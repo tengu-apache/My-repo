@@ -1,0 +1,43 @@
+---
+- name: Get LLDP neighbor information and save interface descriptions using templates
+  hosts:
+    - all
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    connection_settings:
+      host: "{{ ansible_host }}"
+    tmp_dir: "{{ user_data_path }}/tmp"
+    template_dir: "template"
+
+  tasks:
+    - name: get lldp neighbor table
+      juniper_junos_rpc:
+        provider: "{{ connection_settings }}"
+        rpcs: get-lldp-neighbors-information
+        format: xml
+      register: lldp
+
+    - name: get neighbor details
+      xml:
+        xmlstring: "{{ lldp.stdout }}"
+        xpath: >
+          //lldp-neighbor-information[starts-with(lldp-local-interface, '{{ item }}')]/lldp-remote-system-name |
+          //lldp-neighbor-information[starts-with(lldp-local-interface, '{{ item }}')]/lldp-remote-port-description
+        content: text
+      loop: "{{ aja2_host.uplinks }}"
+      register: neighbors
+
+    - name: save interface descriptions, template 1
+      template:
+        src: "{{ template_dir }}/int-desc-1.j2"
+        dest: "{{ tmp_dir }}/{{ inventory_hostname }}-{{ item.item | replace('/', '-') }}.conf"
+      loop: "{{ neighbors.results }}"
+
+    - name: save interface descriptions, template 2
+      template:
+        src: "{{ template_dir }}/int-desc-2.j2"
+        dest: "{{ tmp_dir }}/{{ inventory_hostname }}.conf"

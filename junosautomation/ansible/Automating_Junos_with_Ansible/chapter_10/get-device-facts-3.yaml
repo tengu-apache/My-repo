@@ -1,0 +1,26 @@
+---
+- name: Get facts from Junos device
+  hosts:
+    - all
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  vars:
+    facts_dir: "{{ user_data_path }}/facts"
+    connection_settings:
+      host: "{{ ansible_host }}"
+
+  tasks:
+    - name: confirm/create report directory
+      file:
+        path: "{{ facts_dir }}"
+        state: directory
+      run_once: yes
+      delegate_to: localhost
+
+    - name: get device facts
+      juniper_junos_facts:
+        provider: "{{ connection_settings }}"
+        savedir: "{{ facts_dir }}"
